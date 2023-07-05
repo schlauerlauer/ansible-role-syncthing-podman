@@ -1,0 +1,5 @@
+---
+# defaults file for ansible-role-syncthing-podman
+
+syncthing_version: "1.23.6"
+syncthing_port: "8384"

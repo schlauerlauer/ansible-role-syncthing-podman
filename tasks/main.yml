@@ -1,0 +1,30 @@
+---
+# tasks file for ansible-role-syncthing-podman
+
+- name: "Create directories"
+  file:
+    path: "{{ item }}"
+    state: "directory"
+  loop:
+    - "{{ base_dir }}/syncthing"
+    - "{{ base_dir }}/syncthing/data"
+
+- name: "Run syncthing container"
+  containers.podman.podman_container:
+    name: "syncthing"
+    image: "docker.io/syncthing/syncthing:{{ syncthing_version }}"
+    recreate: no
+    restart_policy: "no"
+    tty: no
+    detach: yes
+    state: "started"
+    env:
+      PUID: 1000
+      GPID: 1000
+    volumes:
+      - "{{ base_dir }}/syncthing/data:/var/syncthing:rw,Z"
+    ports:
+      - "{{ syncthing_port }}:8384" # Web UI
+      - "22000:22000/tcp" # TCP file transfers
+      - "22000:22000/udp" # QUIC file transfers
+      - "21027:21027/udp" # Receive local discovery broadcasts
